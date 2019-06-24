@@ -4,7 +4,7 @@ import { Log } from './log';
 
 export class Webcam {
 
-    private static readonly USE_FAKE = true;
+    private static readonly USE_FAKE = false;
 
     private static readonly webcam = NodeWebcam.create({
         width: 640,
