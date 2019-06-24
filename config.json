@@ -1,0 +1,12 @@
+{
+  "lat": 45.196250,
+  "lng": 5.727160,
+  "altitude": 300,
+  "callSrc": "F4HVV-1",
+  "callDest": "SSTV",
+  "symbolTable": "/",
+  "symbolCode": "E",
+  "commentAprs": "Balise SSTV T={temp} V=[voltage}",
+  "commentSstv": "F4HVV - JN25UE - T={temp} V=[voltage}",
+  "voice": "Balise SS TV, de Foxtrote 4, Hotel Victor Victor. QTH, la bastille"
+}

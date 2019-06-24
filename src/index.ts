@@ -6,6 +6,21 @@ import { EMPTY } from 'rxjs';
 import { Radio } from './radio';
 import { Webcam } from './webcam';
 
+interface ConfigInterface {
+    lat: number,
+    lng: number,
+    altitude: number,
+    callSrc: string,
+    callDest?: string,
+    symbolTable?: string,
+    symbolCode?: string,
+    commentAprs?: string,
+    commentSstv?: string,
+    voice?: string
+}
+
+const config: ConfigInterface = require('../config.json');
+
 Log.log('program', 'Start');
 
 Webcam.capture().pipe(
@@ -19,21 +34,22 @@ Webcam.capture().pipe(
     switchMap(data => {
         Log.log('program', 'Last transmit', Log.getTimestamp('radio').toLocaleString());
         if (
+            config.lat && config.lng && config.altitude && config.callSrc &&
             data.sensorsData.draDetected &&
             new Date().getTime() - Log.getTimestamp('radio').getTime() >= 30 * 60 * 1000
         ) {
             return Radio.sendAprs({
-                lat: 45.196250,
-                lng: 5.727160,
-                altitude: 300,
-                callSrc: 'F4HVV-1',
-                callDest: 'SSTV',
-                symbolTable: '/',
-                symbolCode: 'E',
-                comment: 'Balise SSTV T=' + data.sensorsData.temperature + ' V=' + data.sensorsData.voltage
+                lat: config.lat,
+                lng: config.lng,
+                altitude: config.altitude,
+                callSrc: config.callSrc,
+                callDest: config.callDest,
+                symbolTable: config.symbolTable,
+                symbolCode: config.symbolCode,
+                comment: config.commentAprs ? config.commentAprs.replace('{temp}', '' + data.sensorsData.temperature).replace('{voltage}', '' + data.sensorsData.voltage) : null
             }).pipe(
-                switchMap(() => Radio.sendVoice('Balise SS TV, de Foxtrote 4, Hotel Victor Victor. QTH, la bastille')),
-                switchMap(() => Radio.sendImage(data.imagePath, 'F4HVV')),
+                switchMap(() => config.voice ? Radio.sendVoice(config.voice) : EMPTY),
+                switchMap(() => config.commentSstv ? Radio.sendImage(data.imagePath, config.commentSstv.replace('{temp}', '' + data.sensorsData.temperature).replace('{voltage}', '' + data.sensorsData.voltage)) : EMPTY),
                 tap(() => Log.logTimestamp('radio'))
             )
         } else {

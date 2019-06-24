@@ -100,7 +100,7 @@ export class Radio {
         );
     }
 
-    public static sendImage(imagePath: string, call: string, mode: ModeSstv = ModeSstv.Martin2): Observable<void> {
+    public static sendImage(imagePath: string, comment: string, mode: ModeSstv = ModeSstv.Martin2): Observable<void> {
         Log.log('radio', 'Send image', imagePath);
 
         return new Observable<void>(observer => {
@@ -114,10 +114,8 @@ export class Radio {
                 .then(function (font) {
                     loadedImage
                         .resize(320, 240)
-                        .print(font, 0, 0, call.toUpperCase())
-                        .print(font, loadedImage.getWidth() - (call.length * 16), 0, call.toUpperCase())
-                        .print(font, 0, loadedImage.getHeight() - 16, call.toUpperCase())
-                        .print(font, loadedImage.getWidth() - (call.length * 16), loadedImage.getHeight() - 16, call.toUpperCase())
+                        .print(font, 0, 0, comment.toUpperCase())
+                        .print(font, 0, loadedImage.getHeight() - 16, comment.toUpperCase())
                         .write('/tmp/sstv.jpg');
                     observer.next();
                     observer.complete();
