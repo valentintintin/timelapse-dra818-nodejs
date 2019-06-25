@@ -5,6 +5,7 @@ import { map, switchMap, tap } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 import { Radio } from './radio';
 import { Webcam } from './webcam';
+import SunCalc = require('suncalc');
 
 interface ConfigInterface {
     lat: number,
@@ -57,16 +58,51 @@ Webcam.capture().pipe(
         }
     })
 ).subscribe(
-    (data) => Log.log('program', 'Stop OK', data),
-    error => Log.log('program', 'Stop KO', error.message)
+    (data) => Log.log('program', 'run OK', data),
+    error => Log.log('program', 'run KO', error.message)
 ).add(() => {
-    const wakeUp = new Date();
-    wakeUp.setMinutes(wakeUp.getMinutes() + 3);
-    wakeUp.setSeconds(0);
+    let wakeUp = new Date();
+    const sunTimes: SunCalcResultInterface = SunCalc.getTimes(wakeUp, config.lat, config.lng);
+
+    if (wakeUp > sunTimes.dawn && wakeUp < sunTimes.dusk) {
+        if (wakeUp < sunTimes.goldenHourEnd || wakeUp > sunTimes.goldenHour) {
+            wakeUp.setMinutes(wakeUp.getMinutes() + 1);
+            Log.log('sleep', 'Sunset or sunrise, Wakeup scheduled', wakeUp.toLocaleString());
+        } else {
+            wakeUp.setMinutes(wakeUp.getMinutes() + 3);
+            Log.log('sleep', 'Day, wakeup scheduled', wakeUp.toLocaleString());
+        }
+    } else {
+        wakeUp = sunTimes.dawn;
+        Log.log('sleep', 'Night, Wakeup scheduled', wakeUp.toLocaleString());
+    }
+
     CommunicationArduino.send(CommandArduino.SET_WAKEUP_HOUR, wakeUp.getHours())
         .pipe(
             switchMap(() => CommunicationArduino.send(CommandArduino.SET_WAKEUP_MINUTE, wakeUp.getMinutes())),
             switchMap(() => CommunicationArduino.send(CommandArduino.SLEEP)),
-            tap(() => Log.log('program', 'Sleep and wakeup scheduled', wakeUp.toLocaleString()))
-        ).subscribe();
+        ).subscribe(
+        (data) => Log.log('program', 'Stop OK', data),
+        error => {
+            Log.log('program', 'Stop KO', error.message);
+            process.exit(1);
+        }
+    );
 });
+
+interface SunCalcResultInterface {
+    sunrise: Date;
+    sunriseEnd: Date;
+    goldenHourEnd: Date;
+    solarNoon: Date;
+    goldenHour: Date;
+    sunsetStart: Date;
+    sunset: Date;
+    dusk: Date;
+    nauticalDusk: Date;
+    night: Date;
+    nadir: Date;
+    nightEnd: Date;
+    nauticalDawn: Date;
+    dawn: Date;
+}
