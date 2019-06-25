@@ -30,7 +30,7 @@ export class CommunicationArduino {
             Log.log('i2c', 'Send command', { command: CommandArduino[command], data: data });
 
             if (!this.USE_FAKE) {
-                this.i2c.writeync(this.ARDUINO_ADDR, command, data, 1);
+                this.i2c.writeByteSync(this.ARDUINO_ADDR, command, data, 1);
             }
 
             Log.log('i2c', 'Send command OK', CommandArduino[command]);

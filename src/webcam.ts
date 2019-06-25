@@ -23,7 +23,7 @@ export class Webcam {
             const now = new Date();
 
             if (!this.USE_FAKE) {
-                this.webcam.capture('photos/' + now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate() + '_' + now.getHours() + '-' + now.getMinutes() + '-' + now.getSeconds(), (err, data) => {
+                this.webcam.capture(process.cwd() + '/photos/' + now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate() + '_' + now.getHours() + '-' + now.getMinutes() + '-' + now.getSeconds(), (err, data) => {
                     if (err) {
                         Log.log('webcam', 'Capture error', err);
                         observer.error(err);
@@ -34,7 +34,7 @@ export class Webcam {
                     }
                 });
             } else {
-                observer.next('test.jpg');
+                observer.next(process.cwd() + '/test.jpg');
                 observer.complete();
             }
         });
