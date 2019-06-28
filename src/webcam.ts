@@ -10,9 +10,9 @@ export class Webcam {
         width: 640,
         height: 480,
         quality: 100,
-        skip: 15,
+        skip: 75,
         saveShots: true,
-        output: 'jpeg',
+        output: 'png',
         callbackReturn: 'location',
         verbose: false
     });
@@ -20,10 +20,9 @@ export class Webcam {
     public static capture(): Observable<string> {
         return new Observable<string>(observer => {
             Log.log('webcam', 'Start capture');
-            const now = new Date();
 
             if (!this.USE_FAKE) {
-                this.webcam.capture(process.cwd() + '/photos/' + now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate() + '_' + now.getHours() + '-' + now.getMinutes() + '-' + now.getSeconds(), (err, data) => {
+                this.webcam.capture(process.cwd() + '/photos/' + new Date().format('{YYYY}_{MM}_{DD}-{hh}_{mm}_{ss}'), (err, data) => {
                     if (err) {
                         Log.log('webcam', 'Capture error', err);
                         observer.error(err);

@@ -6,12 +6,18 @@
   "scripts": {
     "start": "node dist/index.js",
     "build": "tsc -p tsconfig.json",
-    "build-start": "npm run build && npm run start"
+    "build-start": "npm run build && npm run start",
+    "test-sstv": "node dist/index.js sstv",
+    "test-voice": "node dist/index.js voice",
+    "send-aprs": "node dist/index.js aprs",
+    "get-sensors": "node dist/index.js sensors",
+    "sleep": "node dist/index.js sleep"
   },
   "keywords": [],
   "author": "Valentin Saugnier F4HVV <valentin.s.10@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "date.format": "^1.1.2",
     "i2c-bus": "^4.0.10",
     "jimp": "^0.6.4",
     "node-webcam": "^0.5.0",

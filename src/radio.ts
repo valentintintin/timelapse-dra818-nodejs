@@ -61,8 +61,8 @@ export class Radio {
                     observer.complete();
                 });
             }),
-            switchMap(() => CommunicationArduino.send(CommandArduino.SET_PTT_OFF)),
             delay(500),
+            switchMap(() => CommunicationArduino.send(CommandArduino.SET_PTT_OFF)),
             catchError(err => {
                 Log.log('radio', 'Send APRS KO', err);
                 return CommunicationArduino.send(CommandArduino.SET_PTT_OFF).pipe(delay(500))
